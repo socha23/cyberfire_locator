@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="locatorTypes">
+        <item>Crate (one item)</item>
+        <item>Container (multiple items)</item>
+    </string-array>
+
+    <string-array name="locatorTypeValues">
+        <item>CRATE</item>
+        <item>CONTAINER</item>
+    </string-array>
+
+</resources>

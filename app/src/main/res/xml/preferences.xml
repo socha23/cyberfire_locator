@@ -6,13 +6,19 @@
         <EditTextPreference
             android:key="preferences_server"
             android:title="@string/preferences_server"
-            android:summary="@string/preferences_server_summary"
             android:defaultValue="@string/preferences_server_default" />
+
+        <ListPreference
+            android:key="preferences_type"
+            android:title="@string/preferences_type"
+            android:defaultValue="CRATE"
+            android:entries="@array/locatorTypes"
+            android:entryValues="@array/locatorTypeValues" />
 
         <EditTextPreference
             android:key="preferences_name"
             android:title="@string/preferences_name"
-            android:summary="@string/preferences_name_summary"
             android:defaultValue="@string/preferences_name_default" />
+
     <!--</PreferenceCategory>-->
 </PreferenceScreen>

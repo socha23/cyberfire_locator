@@ -2,7 +2,10 @@ package pl.socha23.cyberfirelocator;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 
@@ -18,11 +21,43 @@ public class SettingsActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public static class PreferencesFragment extends PreferenceFragment {
+    public static class PreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+            setPreferenceSummaries();
+        }
+
+
+        @Override
+        public void onPause() {
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+            super.onPause();
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            setPreferenceSummaries();
+        }
+
+        private void setPreferenceSummaries() {
+            // we want current values in pref summaries
+            EditTextPreference server = (EditTextPreference)getPreferenceScreen().findPreference("preferences_server");
+            server.setSummary(server.getText());
+
+            EditTextPreference name = (EditTextPreference)getPreferenceScreen().findPreference("preferences_name");
+            name.setSummary(name.getText());
+
+            ListPreference type = (ListPreference)getPreferenceScreen().findPreference("preferences_type");
+            type.setSummary(type.getEntry());
         }
     }
 

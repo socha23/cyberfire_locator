@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">Cyberfire Locator</string>
     <string name="preferences_server">Server address</string>
-    <string name="preferences_server_summary">Address of the server to send location data to</string>
     <string name="preferences_server_default">192.168.0.15</string>
     <string name="preferences_name">Locator name</string>
-    <string name="preferences_name_summary">Descriptive name of this locator</string>
     <string name="preferences_name_default">Unnamed Locator</string>
     <string name="button_prefs">Preferences</string>
     <string name="toast_connection_failed">Connection to Google Play Services failed</string>
+    <string name="preferences_type">Locator type</string>
 </resources>
