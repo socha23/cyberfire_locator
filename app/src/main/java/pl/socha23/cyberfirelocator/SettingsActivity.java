@@ -6,12 +6,12 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 
-public class PreferencesActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preferences);
+        setContentView(R.layout.activity_settings);
         getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.preferences_container, new PreferencesFragment())
@@ -27,6 +27,6 @@ public class PreferencesActivity extends AppCompatActivity {
     }
 
     public static Intent createIntent(Context ctx) {
-        return new Intent(ctx, PreferencesActivity.class);
+        return new Intent(ctx, SettingsActivity.class);
     }
 }
