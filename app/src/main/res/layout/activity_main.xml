@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -11,17 +12,51 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="pl.socha23.cyberfirelocator.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/label_status" />
-
-    <Button
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button_prefs"
-        android:text="@string/button_prefs"
-        android:onClick="onPreferencesButtonClick"
-        />
+        android:gravity="right">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@android:drawable/ic_menu_preferences"
+            android:id="@+id/imageButton"
+            android:layout_weight="0"
+            android:onClick="onPreferencesButtonClick"
+            android:elevation="0dp"
+            android:background="@android:color/transparent" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <TextView
+            android:text="label_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/label_name"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"
+            android:gravity="center" />
+
+        <TextView
+            android:text="label_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/label_type"
+            android:textAppearance="@android:style/TextAppearance.Material.Medium"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hello World!"
+            android:id="@+id/label_status" />
+    </LinearLayout>
+
 </LinearLayout>

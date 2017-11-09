@@ -1,6 +1,8 @@
 package pl.socha23.cyberfirelocator;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -38,13 +40,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onResume() {
+        setTextFieldsFromSettings();
+        super.onResume();
+    }
+
+    private void setTextFieldsFromSettings() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        setTextField(R.id.label_type, prefs.getString("preferences_type", "<unknown type>"));
+        setTextField(R.id.label_name, prefs.getString("preferences_name", "<unknown name>"));
+    }
+
+    private void setTextField(int fieldId, String text) {
+        ((TextView)findViewById(fieldId)).setText(text);
+    }
+
+    @Override
     public void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
-    }
-
-    private TextView getStatusView() {
-        return (TextView) findViewById(R.id.label_status);
     }
 
     public void onPreferencesButtonClick(View view) {
@@ -53,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLocationChanged(LocationChangedEvent e) {
-        getStatusView().setText(
+        setTextField(R.id.label_status,
                 e.getLocation().getLatitude() + " x " + e.getLocation().getLongitude()
         );
     }
