@@ -25,6 +25,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'org.greenrobot:eventbus:3.1.0-RC'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
 
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'

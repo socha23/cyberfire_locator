@@ -1,7 +1,7 @@
 package pl.socha23.cyberfirelocator;
 
-import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -15,37 +15,45 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private LocatorSynchronizer locatorSynchronizer = new LocatorSynchronizer();
     private final static String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        connectLocationSubscriber();
         setContentView(R.layout.activity_main);
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+        setTextFieldsFromSettings();
+        connectLocationSubscriber();
+        connectLocatorSynchronizer();
     }
 
     private void connectLocationSubscriber() {
         LocationSubscriber.getInstance().connect(this);
     }
 
+    private void connectLocatorSynchronizer() {
+        try {
+            locatorSynchronizer.connect(this);
+        } catch (Exception e) {
+            updateSyncStatus(e.getMessage(), Color.RED);
+        }
+
+    }
+
     @Override
     protected void onDestroy() {
         LocationSubscriber.getInstance().disconnect();
+        locatorSynchronizer.close();
         super.onDestroy();
     }
 
     @Override
     public void onStart() {
-        EventBus.getDefault().register(this);
         super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        setTextFieldsFromSettings();
-        super.onResume();
+        EventBus.getDefault().register(this);
     }
 
     private void setTextFieldsFromSettings() {
@@ -76,6 +84,22 @@ public class MainActivity extends AppCompatActivity {
         setIconColor(R.color.fireGreen);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncSuccess(SynchronizationSuccessEvent e) {
+        updateSyncStatus("last sync on " + e.getDate().toString(), Color.WHITE);
+    }
+
+    private void updateSyncStatus(String message, int color) {
+        setTextField(R.id.label_synchronizationStatus, message);
+        ((TextView)findViewById(R.id.label_synchronizationStatus)).setTextColor(color);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncError(SynchronizationErrorEvent e) {
+        updateSyncStatus(e.getMessage(), Color.RED);
+    }
+
+
     private void setIconColor(int color) {
         ((ImageView)findViewById(R.id.icon_main)).setColorFilter(ContextCompat.getColor(this, color), android.graphics.PorterDuff.Mode.SRC_IN);
     }
@@ -85,5 +109,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == LocationSubscriber.REQUEST_PERMISSION_CODE) {
             connectLocationSubscriber();
         }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        setTextFieldsFromSettings();
     }
 }

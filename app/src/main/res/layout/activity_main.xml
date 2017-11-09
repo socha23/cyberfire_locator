@@ -82,6 +82,13 @@
         android:gravity="bottom">
 
         <TextView
+            android:text="not synchronized"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/label_synchronizationStatus"
+            android:gravity="center" />
+
+        <TextView
             android:text="locatorId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
