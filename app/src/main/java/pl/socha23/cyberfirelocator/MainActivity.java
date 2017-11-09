@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         LocationSubscriber.getInstance().disconnect();
+        super.onDestroy();
     }
 
     @Override
