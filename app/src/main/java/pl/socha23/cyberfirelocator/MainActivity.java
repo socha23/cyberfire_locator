@@ -98,6 +98,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         setIconColor(R.color.fireRed);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncStart(SynchronizationStartEvent e) {
+        setIconColor(R.color.fireOrange);
+    }
 
     private void updateSyncStatus(String message, int color) {
         setTextField(R.id.label_synchronizationStatus, message);

@@ -49,6 +49,7 @@ public class LocatorSynchronizer {
     public void sendLocation() {
         LocatorState state = getCurrentState();
         Call call = serverside.post(state);
+        EventBus.getDefault().post(new SynchronizationStartEvent());
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
