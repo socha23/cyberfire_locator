@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         setTextFieldsFromSettings();
         connectLocationSubscriber();
-        connectLocatorSynchronizer();
     }
 
     private void connectLocationSubscriber() {
@@ -38,9 +37,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         try {
             locatorSynchronizer.connect(this);
         } catch (Exception e) {
-            updateSyncStatus(e.getMessage(), Color.RED);
+            this.onSyncError(new SynchronizationErrorEvent(e.getMessage()));
         }
+    }
 
+    public void onSynchronize(View w) {
+        locatorSynchronizer.sendLocation();
     }
 
     @Override
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        connectLocatorSynchronizer();
     }
 
     private void setTextFieldsFromSettings() {
@@ -81,22 +84,24 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLocationChanged(LocationChangedEvent e) {
         setTextField(R.id.label_location, LocationFormatter.format(e.getLocation()));
-        setIconColor(R.color.fireGreen);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSyncSuccess(SynchronizationSuccessEvent e) {
         updateSyncStatus("last sync on " + e.getDate().toString(), Color.WHITE);
-    }
-
-    private void updateSyncStatus(String message, int color) {
-        setTextField(R.id.label_synchronizationStatus, message);
-        ((TextView)findViewById(R.id.label_synchronizationStatus)).setTextColor(color);
+        setIconColor(R.color.fireGreen);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSyncError(SynchronizationErrorEvent e) {
         updateSyncStatus(e.getMessage(), Color.RED);
+        setIconColor(Color.RED);
+    }
+
+
+    private void updateSyncStatus(String message, int color) {
+        setTextField(R.id.label_synchronizationStatus, message);
+        ((TextView)findViewById(R.id.label_synchronizationStatus)).setTextColor(color);
     }
 
 
@@ -108,11 +113,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == LocationSubscriber.REQUEST_PERMISSION_CODE) {
             connectLocationSubscriber();
+            connectLocatorSynchronizer();
         }
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         setTextFieldsFromSettings();
+        connectLocatorSynchronizer();
     }
 }
