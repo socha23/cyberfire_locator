@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSyncError(SynchronizationErrorEvent e) {
         updateSyncStatus(e.getMessage(), Color.RED);
-        setIconColor(Color.RED);
+        setIconColor(R.color.fireRed);
     }
 
 
