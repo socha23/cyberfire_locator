@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -79,9 +78,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     private void setTextFieldsFromSettings() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        setTextField(R.id.label_type, prefs.getString("preferences_type", "<unknown type>"));
-        setTextField(R.id.label_name, prefs.getString("preferences_name", "<unknown name>"));
+        setTextField(R.id.label_type, PreferencesUtils.getType(this));
+        setTextField(R.id.label_name, PreferencesUtils.getName(this));
         setTextField(R.id.label_id, LocatorID.get(this));
     }
 
