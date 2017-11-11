@@ -3,6 +3,7 @@ package pl.socha23.cyberfirelocator;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -18,6 +19,8 @@ import retrofit2.http.POST;
 
 public class LocatorSynchronizer {
 
+    private final static String TAG = "LocatorSynchronizer";
+
     private  boolean connected;
 
     private Location lastLocation;
@@ -25,6 +28,7 @@ public class LocatorSynchronizer {
     private Serverside serverside;
 
     private Context context;
+    private boolean syncOn = true;
 
     public void connect(Context ctx) {
         if (connected) {
@@ -47,8 +51,12 @@ public class LocatorSynchronizer {
     }
 
     public void sendLocation() {
+        if (!syncOn) {
+            return;
+        }
         LocatorState state = getCurrentState();
         Call call = serverside.post(state);
+        Log.i(TAG, "Running synchronization...");
         EventBus.getDefault().post(new SynchronizationStartEvent());
         call.enqueue(new Callback() {
             @Override
@@ -80,6 +88,10 @@ public class LocatorSynchronizer {
     public void close() {
         EventBus.getDefault().unregister(this);
         connected = false;
+    }
+
+    public void setSyncOn(boolean syncOn) {
+        this.syncOn = syncOn;
     }
 
     private interface Serverside {

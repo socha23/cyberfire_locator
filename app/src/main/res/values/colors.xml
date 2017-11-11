@@ -2,9 +2,10 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#ff4081</color>
+    <color name="colorAccent">#00dd00</color>
 
-    <color name="fireGreen">#00DD00</color>
+    <color name="fireGray">#666666</color>
+    <color name="fireGreen">#00dd00</color>
     <color name="fireRed">#AA0000</color>
     <color name="fireOrange">#FF6600</color>
 </resources>

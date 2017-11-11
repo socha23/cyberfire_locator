@@ -18,15 +18,38 @@
         android:layout_height="wrap_content"
         android:gravity="right">
 
-        <ImageButton
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@android:drawable/ic_menu_preferences"
-            android:id="@+id/imageButton"
-            android:layout_weight="0"
-            android:onClick="onPreferencesButtonClick"
-            android:elevation="0dp"
-            android:background="@android:color/transparent" />
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/switch_sync"
+                android:layout_weight="0"
+                android:checked="true"
+                android:textColorLink="@color/fireGreen"
+                app:switchMinWidth="75dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="right">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@android:drawable/ic_menu_preferences"
+                android:id="@+id/imageButton"
+                android:onClick="onPreferencesButtonClick"
+                android:elevation="0dp"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
 
     </LinearLayout>
 
