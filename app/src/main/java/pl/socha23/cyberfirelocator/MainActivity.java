@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 setSyncOn(isChecked);
             }
         });
+        EventBus.getDefault().register(this);
     }
 
     private void connectLocationSubscriber() {
@@ -56,33 +57,22 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     public void onSynchronize(View w) {
-        locatorSynchronizer.sendLocation();
+        locatorSynchronizer.sync(true);
     }
 
     @Override
     protected void onDestroy() {
         LocationSubscriber.getInstance().disconnect();
         locatorSynchronizer.close();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
         EventBus.getDefault().unregister(this);
-        super.onStop();
+        super.onDestroy();
     }
 
     private void setSyncOn(boolean on) {
         this.syncOn = on;
         locatorSynchronizer.setSyncOn(on);
         if (on) {
-            locatorSynchronizer.sendLocation();
+            locatorSynchronizer.sync(true);
         } else {
             setIconColor(R.color.fireGray);
         }

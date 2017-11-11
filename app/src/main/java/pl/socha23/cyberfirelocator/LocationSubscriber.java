@@ -34,7 +34,6 @@ public class LocationSubscriber {
 
 
     public boolean connect(Activity ctx) {
-        Log.e(TAG, "connect");
         locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
         String[] PROVIDERS = {LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER};
         if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -51,7 +50,6 @@ public class LocationSubscriber {
     }
 
     public void disconnect() {
-        Log.e(TAG, "disconnect");
         if (locationManager != null) {
             for (int i = 0; i < locationListeners.length; i++) {
                 try {
@@ -77,7 +75,7 @@ public class LocationSubscriber {
     private static class LocationListener implements android.location.LocationListener {
         @Override
         public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged");
+            Log.d(TAG, "location changed");
             EventBus.getDefault().post(new LocationChangedEvent(location));
         }
 

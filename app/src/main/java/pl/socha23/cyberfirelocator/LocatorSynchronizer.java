@@ -9,6 +9,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -18,6 +22,11 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public class LocatorSynchronizer {
+
+    private final static int HEARTBEAT_MS = 30 * 1000;
+
+    private final static long TIME_BETWEEN_SYNCES_MS = 5 * 1000;
+    private long lastSyncOnMillis = 0;
 
     private final static String TAG = "LocatorSynchronizer";
 
@@ -29,6 +38,8 @@ public class LocatorSynchronizer {
 
     private Context context;
     private boolean syncOn = true;
+    private ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(2);
+    private ScheduledFuture scheduledFuture;
 
     public void connect(Context ctx) {
         if (connected) {
@@ -42,18 +53,32 @@ public class LocatorSynchronizer {
         serverside = retrofit.create(Serverside.class);
         EventBus.getDefault().register(this);
         connected = true;
+
+        scheduledFuture = threadPoolExecutor.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                sync(false);
+            }
+        }, 0, HEARTBEAT_MS, TimeUnit.MILLISECONDS);
+
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onLocationChanged(LocationChangedEvent e) {
         lastLocation = e.getLocation();
-        sendLocation();
+        sync(false);
     }
 
-    public void sendLocation() {
+    public void sync(boolean force) {
         if (!syncOn) {
             return;
         }
+
+        if (!force && System.currentTimeMillis() - lastSyncOnMillis < TIME_BETWEEN_SYNCES_MS) {
+            Log.d(TAG, "Not syncing, synced a moment ago...");
+            return;
+        }
+        lastSyncOnMillis = System.currentTimeMillis();
         LocatorState state = getCurrentState();
         Call call = serverside.post(state);
         Log.i(TAG, "Running synchronization...");
@@ -87,6 +112,9 @@ public class LocatorSynchronizer {
 
     public void close() {
         EventBus.getDefault().unregister(this);
+        if (scheduledFuture  != null) {
+            scheduledFuture.cancel(false);
+        }
         connected = false;
     }
 
