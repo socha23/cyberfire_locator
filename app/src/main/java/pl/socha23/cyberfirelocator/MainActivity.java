@@ -21,6 +21,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private LocatorSynchronizer locatorSynchronizer = new LocatorSynchronizer();
+    private LocationSubscriber locationSubscriber = new LocationSubscriber();
     private final static String TAG = "MainActivity";
 
     private boolean syncOn = true;
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     private void connectLocationSubscriber() {
-        LocationSubscriber.getInstance().connect(this);
+        locationSubscriber.connect(this);
     }
 
     private void connectLocatorSynchronizer() {
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     protected void onDestroy() {
-        LocationSubscriber.getInstance().disconnect();
+        locationSubscriber.disconnect();
         locatorSynchronizer.close();
         EventBus.getDefault().unregister(this);
         super.onDestroy();
@@ -71,8 +72,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         this.syncOn = on;
         locatorSynchronizer.setSyncOn(on);
         if (on) {
+            locationSubscriber.connect(this);
             locatorSynchronizer.sync(true);
         } else {
+            locationSubscriber.disconnect();
             setIconColor(R.color.fireGray);
         }
     }
@@ -134,10 +137,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     public void onPreferencesButtonClick(View view) {
         startActivity(SettingsActivity.createIntent(this));
-    }
-
-    public void onSwitchClick(View view) {
-        setSyncOn(((Switch)view).isChecked());
     }
 
 

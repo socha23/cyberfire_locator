@@ -15,7 +15,6 @@ import org.greenrobot.eventbus.EventBus;
 public class LocationSubscriber {
 
     public final static int REQUEST_PERMISSION_CODE = 2432;
-    private final static LocationSubscriber INSTANCE = new LocationSubscriber();
     private final static String TAG = "LocationSubscriber";
     private final static int LOCATION_INTERVAL = 1000;
     private final static float LOCATION_DISTANCE_M = 1;
@@ -28,10 +27,6 @@ public class LocationSubscriber {
             new LocationListener(),
             new LocationListener()
     };
-
-    private LocationSubscriber() {
-    }
-
 
     public boolean connect(Activity ctx) {
         locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
@@ -66,10 +61,6 @@ public class LocationSubscriber {
 
     public boolean isConnected() {
         return connected;
-    }
-
-    public static LocationSubscriber getInstance() {
-        return INSTANCE;
     }
 
     private static class LocationListener implements android.location.LocationListener {
