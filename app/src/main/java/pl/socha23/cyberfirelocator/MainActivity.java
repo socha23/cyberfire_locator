@@ -1,5 +1,6 @@
 package pl.socha23.cyberfirelocator;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     private LocatorSynchronizer locatorSynchronizer = new LocatorSynchronizer();
     private LocationSubscriber locationSubscriber = new LocationSubscriber();
+    private TagDetector tagDetector = new TagDetector();
     private final static String TAG = "MainActivity";
 
     private boolean syncOn = true;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         setTextFieldsFromSettings();
         connectLocationSubscriber();
         connectLocatorSynchronizer();
+        connectTagDetector();
 
         ((SwitchCompat)findViewById(R.id.switch_sync)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -56,14 +59,26 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+    private void connectTagDetector() {
+        tagDetector.connect(this);
+    }
+
     public void onSynchronize(View w) {
         locatorSynchronizer.sync(true);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == TagDetector.REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
+            tagDetector.onBluetoothEnabled(this);
+        }
     }
 
     @Override
     protected void onDestroy() {
         locationSubscriber.disconnect();
         locatorSynchronizer.close();
+        tagDetector.disconnect(this);
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
@@ -129,6 +144,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         ((ImageView)findViewById(R.id.icon_main)).setColorFilter(ContextCompat.getColor(this, color), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNearbyDevicesFound(NearbyDevicesFoundEvent e) {
+        String text = (e.getDevices().isEmpty() ? "no" : e.getDevices().size()) + " devices found";
+        ((TextView)findViewById(R.id.label_devices)).setText(text);
+    }
+
+
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         setTextFieldsFromSettings();
@@ -139,6 +161,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         startActivity(SettingsActivity.createIntent(this));
     }
 
+    public void onNearbyDevicesClick(View view) {
+        startActivity(NearbyDevicesActivity.createIntent(this));
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

@@ -9,6 +9,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +35,7 @@ public class LocatorSynchronizer {
     private  boolean connected;
 
     private Location lastLocation;
+    private List<NearbyDevice> lastDevices = new ArrayList<>();
 
     private Serverside serverside;
 
@@ -69,6 +72,13 @@ public class LocatorSynchronizer {
         sync(false);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNearbyDevicesFound(NearbyDevicesFoundEvent e) {
+        lastDevices = e.getDevices();
+        sync(false);
+    }
+
+
     public void sync(boolean force) {
         if (!syncOn) {
             return;
@@ -81,16 +91,18 @@ public class LocatorSynchronizer {
         lastSyncOnMillis = System.currentTimeMillis();
         LocatorState state = getCurrentState();
         Call call = serverside.post(state);
-        Log.i(TAG, "Running synchronization...");
+        Log.d(TAG, "Running synchronization...");
         EventBus.getDefault().post(new SynchronizationStartEvent());
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
+                Log.d(TAG, "...synchronization ok");
                 EventBus.getDefault().post(new SynchronizationSuccessEvent());
             }
 
             @Override
             public void onFailure(Call call, Throwable t) {
+                Log.e(TAG, "...sync failure");
                 EventBus.getDefault().post(new SynchronizationErrorEvent(t.getMessage()));
             }
         });
@@ -107,6 +119,7 @@ public class LocatorSynchronizer {
             state.setLatitude(lastLocation.getLatitude());
             state.setLongitude(lastLocation.getLongitude());
         }
+        state.setNearbyDevices(lastDevices);
         return state;
     }
 

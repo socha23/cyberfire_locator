@@ -1,5 +1,7 @@
 package pl.socha23.cyberfirelocator;
 
+import java.util.List;
+
 public class LocatorState {
 
     private double latitude;
@@ -7,6 +9,7 @@ public class LocatorState {
     private String id;
     private String name;
     private String type;
+    private List<NearbyDevice> nearbyDevices;
 
     public double getLatitude() {
         return latitude;
@@ -46,5 +49,13 @@ public class LocatorState {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public List<NearbyDevice> getNearbyDevices() {
+        return nearbyDevices;
+    }
+
+    public void setNearbyDevices(List<NearbyDevice> nearbyDevices) {
+        this.nearbyDevices = nearbyDevices;
     }
 }
